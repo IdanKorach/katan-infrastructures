@@ -1,10 +1,15 @@
-import { Button } from '@/components/ui/button';
+import FeaturedServices from '@/components/landing-page/featured-services';
+import HeroSection from '@/components/landing-page/hero-section';
+import RecentlyLunchedProjects from '@/components/landing-page/recently-lunched-projects';
 
 export default function Home() {
   return (
     <div>
-      <h1>Welcome to My Next.js App!</h1>
-      <Button>Click me</Button>
+      <HeroSection />
+
+      <FeaturedServices />
+
+      <RecentlyLunchedProjects/>
     </div>
   );
 }
