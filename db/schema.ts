@@ -14,6 +14,6 @@ export const projectsTable = pgTable('projects', {
   description: text('description').notNull(),
   location: varchar('location'),
   serviceType: varchar('service_type'), // e.g., "חפירה", "ניקוז"
-  imageUrl: varchar('image_url'),
+  imageUrl: varchar('image_url').notNull(),
   createdAt: timestamp('created_at').defaultNow(),
 })
