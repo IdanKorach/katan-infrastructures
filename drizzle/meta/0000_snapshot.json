@@ -1,13 +1,30 @@
 {
-  "id": "d2398c32-bdf7-4926-9c07-5fe976beb117",
+  "id": "ebf5b171-dc39-434c-8944-c719bca66f6d",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
-    "public.contacts_info": {
-      "name": "contacts_info",
+    "public.inquiries": {
+      "name": "inquiries",
       "schema": "",
       "columns": {
+        "id": {
+          "name": "id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true,
+          "identity": {
+            "type": "always",
+            "name": "inquiries_id_seq",
+            "schema": "public",
+            "increment": "1",
+            "startWith": "1",
+            "minValue": "1",
+            "maxValue": "2147483647",
+            "cache": "1",
+            "cycle": false
+          }
+        },
         "name": {
           "name": "name",
           "type": "varchar",
@@ -16,7 +33,7 @@
         },
         "phone": {
           "name": "phone",
-          "type": "integer",
+          "type": "varchar",
           "primaryKey": false,
           "notNull": true
         },
@@ -26,17 +43,24 @@
           "primaryKey": false,
           "notNull": true
         },
-        "message_type": {
-          "name": "message_type",
+        "subject": {
+          "name": "subject",
           "type": "varchar",
           "primaryKey": false,
-          "notNull": false
+          "notNull": true
         },
         "message": {
           "name": "message",
           "type": "text",
           "primaryKey": false,
-          "notNull": false
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
         }
       },
       "indexes": {},
@@ -96,7 +120,7 @@
           "name": "image_url",
           "type": "varchar",
           "primaryKey": false,
-          "notNull": false
+          "notNull": true
         },
         "created_at": {
           "name": "created_at",

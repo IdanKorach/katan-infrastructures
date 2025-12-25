@@ -1,11 +1,13 @@
 import { integer, pgTable, text, timestamp, varchar } from 'drizzle-orm/pg-core';
 
-export const contactsInfoTable = pgTable('contacts_info', {
+export const inquiriesTable = pgTable('inquiries', {
+  id: integer('id').primaryKey().generatedAlwaysAsIdentity(),
   name: varchar('name').notNull(),
-  phone: integer('phone').notNull(),
+  phone: varchar('phone').notNull(),  
   email: varchar('email').notNull(),
-  messageType: varchar('message_type'),
-  message: text('message'),
+  subject: varchar('subject').notNull(),  
+  message: text('message').notNull(),
+  createdAt: timestamp('created_at').defaultNow(),
 });
 
 export const projectsTable = pgTable('projects', {
@@ -13,7 +15,7 @@ export const projectsTable = pgTable('projects', {
   title: varchar('title').notNull(),
   description: text('description').notNull(),
   location: varchar('location'),
-  serviceType: varchar('service_type'), // e.g., "חפירה", "ניקוז"
+  serviceType: varchar('service_type'),
   imageUrl: varchar('image_url').notNull(),
   createdAt: timestamp('created_at').defaultNow(),
-})
+});

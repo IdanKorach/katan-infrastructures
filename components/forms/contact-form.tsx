@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useActionState, useState, useEffect } from "react";
+import { z } from "zod";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
@@ -11,12 +12,22 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { addContactMessage } from "@/actions/contact-actions";
+import { addContactMessageAction } from "@/actions/contact-actions";
+import { contactFormSchema } from "@/lib/validations/contact-schema";
+import { Loader2Icon } from "lucide-react";
+
+const initialState = {
+  success: false,
+  error: {},
+  message: "",
+};
 
 export default function ContactForm() {
-  const handleSubmit = async (formData: FormData) => {
-    await addContactMessage(formData);
-  };
+  const [state, formAction, isPending] = useActionState(
+    addContactMessageAction,
+    initialState
+  );
+
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -28,41 +39,20 @@ export default function ContactForm() {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [touched, setTouched] = useState<Record<string, boolean>>({});
 
-  // Validate individual field
+  // Validate field using Zod
   const validateField = (name: string, value: string): string => {
-    switch (name) {
-      case "name":
-        if (!value.trim()) return "שם מלא נדרש";
-        // Only Hebrew and English letters, spaces allowed
-        if (!/^[a-zA-Z\u0590-\u05FF\s]+$/.test(value)) {
-          return "השם יכול להכיל רק אותיות";
-        }
-        break;
-      case "email":
-        if (!value.trim()) return "אימייל נדרש";
-        if (!value.includes("@")) return "אימייל לא תקין";
-        break;
-      case "phone":
-        if (!value.trim()) return "טלפון נדרש";
-        // Israeli phone: Must be exactly 10 digits
-        // Mobile: 05X-XXXXXXX (05 + 8 digits)
-        // Landline: 0X-XXXXXXX (0 + 9 digits, but we'll focus on mobile for now)
-        const phoneRegex = /^05[0-9]-\d{7}$|^05[0-9]\d{7}$/;
-        if (!phoneRegex.test(value.replace(/\s/g, ""))) {
-          return "מספר טלפון לא תקין (050-1234567 = 10 ספרות)";
-        }
-        break;
-      case "subject":
-        if (!value) return "בחר נושא";
-        break;
-      case "message":
-        if (!value.trim()) return "הודעה נדרשת";
-        if (value.trim().length < 10) {
-          return "ההודעה חייבת להיות לפחות 10 תווים";
-        }
-        break;
+    try {
+      const fieldSchema = contactFormSchema.pick({
+        [name]: true,
+      } as any);
+      fieldSchema.parse({ [name]: value });
+      return "";
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return error.issues[0]?.message || "";
+      }
+      return "";
     }
-    return "";
   };
 
   // Handle field change
@@ -79,7 +69,7 @@ export default function ContactForm() {
     }
   };
 
-  // Handle field blur (when leaving input)
+  // Handle field blur
   const handleFieldBlur = (
     e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
@@ -99,38 +89,48 @@ export default function ContactForm() {
     setErrors({ ...errors, subject: error });
   };
 
-  // Validate all fields on submit
-  const validateForm = (): boolean => {
-    const newErrors: Record<string, string> = {};
-
-    Object.keys(formData).forEach((key) => {
-      const error = validateField(key, formData[key as keyof typeof formData]);
-      if (error) newErrors[key] = error;
-    });
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
-  // // Handle submit
-  // const handleSubmit = (e: React.FormEvent) => {
-  //   e.preventDefault();
-
-  //   if (!validateForm()) {
-  //     console.log("Form has errors");
-  //     return;
-  //   }
-
-  //   console.log("Form is valid:", formData);
-  // };
+  useEffect(() => {
+    if (state.success) {
+      setFormData({
+        name: "",
+        email: "",
+        phone: "",
+        subject: "",
+        message: "",
+      });
+      setTouched({});
+      setErrors({});
+    }
+  }, [state.success]);
 
   return (
-    <form action={handleSubmit} className="space-y-6 max-w-4xl mx-auto p-8 bg-card rounded-lg border">
+    <form
+      action={formAction}
+      className="space-y-6 max-w-4xl mx-auto p-8 bg-card rounded-lg border"
+    >
       {/* Title */}
       <div className="mb-8">
         <h2 className="text-3xl font-bold mb-2">צור קשר</h2>
-        <div className="h-1 w-16 bg-primary rounded"></div>
+        <div className="h-1 w-30 bg-primary rounded"></div>
       </div>
+
+      {/* Server-side error messages */}
+      {state.error && Object.keys(state.error).length > 0 && (
+        <div className="bg-destructive/10 border border-destructive rounded-lg p-4 space-y-2">
+          {Object.entries(state.error).map(([field, messages]) => (
+            <p key={field} className="text-destructive text-sm">
+              {(messages as string[])[0]}
+            </p>
+          ))}
+        </div>
+      )}
+
+      {/* Success message */}
+      {state.success && (
+        <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+          <p className="text-green-800">{state.message}</p>
+        </div>
+      )}
 
       {/* Name & Email Row */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -195,12 +195,19 @@ export default function ContactForm() {
 
       {/* Subject */}
       <div className="space-y-2">
-        <Select dir="rtl" value={formData.subject} onValueChange={handleSelectChange}>
-          <SelectTrigger className={`w-full border-2 transition ${
-            touched.subject && errors.subject
-              ? "border-destructive"
-              : "border-border hover:border-primary focus:border-primary"
-          }`}>
+        <input type="hidden" name="subject" value={formData.subject} />
+        <Select
+          dir="rtl"
+          value={formData.subject}
+          onValueChange={handleSelectChange}
+        >
+          <SelectTrigger
+            className={`w-full border-2 transition ${
+              touched.subject && errors.subject
+                ? "border-destructive"
+                : "border-border hover:border-primary focus:border-primary"
+            }`}
+          >
             <SelectValue placeholder="בחר נושא *" />
           </SelectTrigger>
           <SelectContent>
@@ -236,9 +243,17 @@ export default function ContactForm() {
       {/* Submit Button */}
       <Button
         type="submit"
-        className="w-full md:w-1/3 bg-primary hover:bg-primary/90 text-primary-foreground font-semibold py-3 rounded transition cursor-pointer"
+        disabled={isPending}
+        className="w-full md:w-1/3 bg-primary hover:bg-primary/90 text-primary-foreground font-semibold py-3 rounded transition cursor-pointer disabled:opacity-50"
       >
-        שלח הודעה
+        {isPending ? (
+          <>
+            <Loader2Icon className="size-4 mr-2 animate-spin" />
+            שולח...
+          </>
+        ) : (
+          "שלח הודעה"
+        )}
       </Button>
     </form>
   );
