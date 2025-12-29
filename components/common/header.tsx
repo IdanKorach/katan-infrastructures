@@ -1,6 +1,6 @@
-import { HardHat, InfoIcon } from "lucide-react"
+import { HardHat } from "lucide-react"
 import Link from "next/link"
-import { NavigationMenuDemo } from "./navigation-menu"
+import { NavigationBar } from "./navigation-menu"
 
 const Logo = () => {
   return (
@@ -28,7 +28,7 @@ export default function Header() {
         <div className="flex h-16 flex-row-reverse 
         items-center justify-between">
           <Logo />
-          <NavigationMenuDemo />
+          <NavigationBar />
         </div>
       </div>
     </header>
