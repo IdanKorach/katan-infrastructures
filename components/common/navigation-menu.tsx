@@ -20,7 +20,6 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 import {
   Collapsible,
   CollapsibleContent,
@@ -34,6 +33,14 @@ export function NavigationBar() {
       {/* Desktop Menu - hidden on mobile */}
       <NavigationMenu className="hidden lg:flex">
         <NavigationMenuList>
+          <NavigationMenuItem>
+            <Link
+              href="/admin"
+              className="inline-flex h-9 items-center justify-center rounded-md px-4 py-2 text-sm font-bold text-black bg-red-500 hover:bg-red-600 transition-colors"
+            >
+              Admin
+            </Link>
+          </NavigationMenuItem>
           <NavigationMenuItem>
             <NavigationMenuLink
               asChild
@@ -226,6 +233,13 @@ function MobileNav() {
               className="flex items-center px-6 py-3 text-sm font-medium hover:bg-accent transition-colors"
             >
               צור קשר
+            </Link>
+            <Link
+              href="/admin"
+              onClick={closeMenu}
+              className="flex items-center px-6 py-3 text-sm font-bold text-black bg-red-500 hover:bg-red-600 transition-colors"
+            >
+              Admin
             </Link>
           </nav>
         </div>

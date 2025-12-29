@@ -7,6 +7,7 @@ export const inquiriesTable = pgTable('inquiries', {
   email: varchar('email').notNull(),
   subject: varchar('subject').notNull(),  
   message: text('message').notNull(),
+  status: varchar('status').default('new'),
   createdAt: timestamp('created_at').defaultNow(),
 });
 

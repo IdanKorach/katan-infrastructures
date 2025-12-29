@@ -1,0 +1,1 @@
+ALTER TABLE "inquiries" ADD COLUMN "status" varchar DEFAULT 'new';
