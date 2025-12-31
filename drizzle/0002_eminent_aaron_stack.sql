@@ -1,1 +1,0 @@
-ALTER TABLE "contacts_info" RENAME TO "inquiries";

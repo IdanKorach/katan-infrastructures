@@ -24,7 +24,7 @@ export const addContactMessageAction = async (prevState: any, formData: FormData
   }
 
   // Save to database
-//   await db.insert(inquiriesTable).values(result.data);
+  await db.insert(inquiriesTable).values(result.data);
 
   return {
     success: true,
