@@ -1,8 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Menu, ChevronDown } from "lucide-react";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 import {
   NavigationMenu,
@@ -26,106 +27,99 @@ import {
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
 
-// Desktop Navigation
 export function NavigationBar() {
-  return (
-    <>
-      {/* Desktop Menu - hidden on mobile */}
-      <NavigationMenu className="hidden lg:flex">
-        <NavigationMenuList>
-          <NavigationMenuItem>
-            <Link
-              href="/admin"
-              className="inline-flex h-9 items-center justify-center rounded-md px-4 py-2 text-sm font-bold text-black bg-red-500 hover:bg-red-600 transition-colors"
-            >
-              Admin
-            </Link>
-          </NavigationMenuItem>
-          <NavigationMenuItem>
-            <NavigationMenuLink
-              asChild
-              className={navigationMenuTriggerStyle()}
-            >
-              <Link href="/contact-us">צור קשר</Link>
-            </NavigationMenuLink>
-          </NavigationMenuItem>
-          <NavigationMenuItem>
-            <NavigationMenuLink
-              asChild
-              className={navigationMenuTriggerStyle()}
-            >
-              <Link href="/gallery">גלרייה</Link>
-            </NavigationMenuLink>
-          </NavigationMenuItem>
-          <NavigationMenuItem>
-            <NavigationMenuLink
-              asChild
-              className={navigationMenuTriggerStyle()}
-            >
-              <Link href="/equipment-rental">ציוד למכירה והשכרה</Link>
-            </NavigationMenuLink>
-          </NavigationMenuItem>
-          <NavigationMenuItem>
-            <NavigationMenuTrigger>שירותים</NavigationMenuTrigger>
-            <NavigationMenuContent>
-              <ul className="grid w-[280px] gap-2 p-4 text-right">
-                <li>
-                  <NavigationMenuLink asChild>
-                    <Link
-                      href="/infrastructure"
-                      className="block p-2 hover:bg-muted rounded-md"
-                    >
-                      ביצוע עבודות כבישים, ביוב, ניקוז ומים
-                    </Link>
-                  </NavigationMenuLink>
-                </li>
-                <li>
-                  <NavigationMenuLink asChild>
-                    <Link
-                      href="/equipment-rental"
-                      className="block p-2 hover:bg-muted rounded-md"
-                    >
-                      השכרת ומכירת ציוד דיפון לחפירות בעומק
-                    </Link>
-                  </NavigationMenuLink>
-                </li>
-                <li>
-                  <NavigationMenuLink asChild>
-                    <Link
-                      href="/trench-shoring"
-                      className="block p-2 hover:bg-muted rounded-md"
-                    >
-                      עבודות שיגומים
-                    </Link>
-                  </NavigationMenuLink>
-                </li>
-                <li>
-                  <NavigationMenuLink asChild>
-                    <Link
-                      href="/groundwater"
-                      className="block p-2 hover:bg-muted rounded-md"
-                    >
-                      עבודות במי תהום
-                    </Link>
-                  </NavigationMenuLink>
-                </li>
-              </ul>
-            </NavigationMenuContent>
-          </NavigationMenuItem>
-          <NavigationMenuItem>
-            <NavigationMenuLink
-              asChild
-              className={navigationMenuTriggerStyle()}
-            >
-              <Link href="/about">אודות</Link>
-            </NavigationMenuLink>
-          </NavigationMenuItem>
-        </NavigationMenuList>
-      </NavigationMenu>
+  const isMobile = useIsMobile();
 
-      {/* Mobile Menu */}
-      <MobileNav />
-    </>
+  // Show nothing during SSR to avoid hydration mismatch
+  if (isMobile === undefined) {
+    return null; // or a skeleton/placeholder
+  }
+
+  return isMobile ? <MobileNav /> : <DesktopNav />;
+}
+
+// Desktop Navigation
+function DesktopNav() {
+  return (
+    <NavigationMenu>
+      <NavigationMenuList>
+        <NavigationMenuItem>
+          <Link
+            href="/admin"
+            className="inline-flex h-9 items-center justify-center rounded-md px-4 py-2 text-sm font-bold text-black bg-red-500 hover:bg-red-600 transition-colors"
+          >
+            Admin
+          </Link>
+        </NavigationMenuItem>
+        <NavigationMenuItem>
+          <NavigationMenuLink asChild className={navigationMenuTriggerStyle()}>
+            <Link href="/contact-us">צור קשר</Link>
+          </NavigationMenuLink>
+        </NavigationMenuItem>
+        <NavigationMenuItem>
+          <NavigationMenuLink asChild className={navigationMenuTriggerStyle()}>
+            <Link href="/gallery">גלרייה</Link>
+          </NavigationMenuLink>
+        </NavigationMenuItem>
+        <NavigationMenuItem>
+          <NavigationMenuLink asChild className={navigationMenuTriggerStyle()}>
+            <Link href="/equipment-rental">ציוד למכירה והשכרה</Link>
+          </NavigationMenuLink>
+        </NavigationMenuItem>
+        <NavigationMenuItem>
+          <NavigationMenuTrigger>שירותים</NavigationMenuTrigger>
+          <NavigationMenuContent>
+            <ul className="grid w-[280px] gap-2 p-4 text-right">
+              <li>
+                <NavigationMenuLink asChild>
+                  <Link
+                    href="/infrastructure"
+                    className="block p-2 hover:bg-muted rounded-md"
+                  >
+                    ביצוע עבודות כבישים, ביוב, ניקוז ומים
+                  </Link>
+                </NavigationMenuLink>
+              </li>
+              <li>
+                <NavigationMenuLink asChild>
+                  <Link
+                    href="/equipment-rental"
+                    className="block p-2 hover:bg-muted rounded-md"
+                  >
+                    השכרת ומכירת ציוד דיפון לחפירות בעומק
+                  </Link>
+                </NavigationMenuLink>
+              </li>
+              <li>
+                <NavigationMenuLink asChild>
+                  <Link
+                    href="/trench-shoring"
+                    className="block p-2 hover:bg-muted rounded-md"
+                  >
+                    עבודות שיגומים
+                  </Link>
+                </NavigationMenuLink>
+              </li>
+              <li>
+                <NavigationMenuLink asChild>
+                  <Link
+                    href="/groundwater"
+                    className="block p-2 hover:bg-muted rounded-md"
+                  >
+                    עבודות במי תהום
+                  </Link>
+                </NavigationMenuLink>
+              </li>
+            </ul>
+          </NavigationMenuContent>
+        </NavigationMenuItem>
+        <NavigationMenuItem>
+          <NavigationMenuLink asChild className={navigationMenuTriggerStyle()}>
+            <Link href="/about">אודות</Link>
+          </NavigationMenuLink>
+        </NavigationMenuItem>
+      </NavigationMenuList>
+    </NavigationMenu>
   );
 }
 
@@ -136,21 +130,9 @@ function MobileNav() {
 
   const closeMenu = () => setOpen(false);
 
-  useEffect(() => {
-    const handleResize = () => {
-      if (window.innerWidth >= 1024) {
-        // lg breakpoint
-        setOpen(false);
-      }
-    };
-
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
-
   return (
     <Sheet open={open} onOpenChange={setOpen}>
-      <SheetTrigger asChild className="lg:hidden">
+      <SheetTrigger asChild>
         <Button variant="ghost" size="icon">
           <Menu className="size-6" />
           <span className="sr-only">Toggle menu</span>
@@ -169,7 +151,6 @@ function MobileNav() {
               אודות
             </Link>
 
-            {/* Services Collapsible */}
             <Collapsible open={servicesOpen} onOpenChange={setServicesOpen}>
               <CollapsibleTrigger className="flex items-center gap-2 w-full px-6 py-3 text-sm font-medium hover:bg-accent transition-colors">
                 <ChevronDown
