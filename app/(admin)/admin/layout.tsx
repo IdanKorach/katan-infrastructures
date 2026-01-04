@@ -24,15 +24,13 @@ export default async function AdminLayout({
       }
     >
       <AdminSidebar variant="inset" />
-      <SidebarInset>
-        <SidebarTrigger className="-ml-1" />
-        <div className="min-h-screen bg-muted/10">
-          <div className="flex">
-            <main className="flex-1 p-8 overflow-x-auto min-w-0">
-              {children}
-            </main>
-          </div>
+      <SidebarInset className="overflow-x-hidden">
+        <div className="flex items-center gap-2 p-4">
+          <SidebarTrigger />
         </div>
+        <main className="p-8 min-w-0">
+          {children}
+        </main>
       </SidebarInset>
     </SidebarProvider>
   );
